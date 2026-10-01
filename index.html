@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Test de dominancia cerebral (modelo Benziger): descubrí cuál de los cuatro modos de pensamiento es el tuyo.">
+<title>Mapa Cerebral Benziger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Sans:opsz,wght@9..40,400..700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --bg:#F5F4FB;
+    --surface:#FFFFFF;
+    --surface-2:#FBFAFF;
+    --ink:#191627;
+    --ink-soft:#4B4763;
+    --ink-faint:#847FA0;
+    --line:#E7E4F2;
+    --line-strong:#D6D2E8;
+
+    /* Cuadrantes (esquema HBDI): verde=Basal Izq, rojo=Basal Der, amarillo=Frontal Der, azul=Frontal Izq */
+    --m1:#16A34A;   /* Basal Izquierdo  — VERDE    */
+    --m2:#E23B3B;   /* Basal Derecho    — ROJO     */
+    --m3:#F2B300;   /* Frontal Derecho  — AMARILLO */
+    --m4:#2E6FF2;   /* Frontal Izquierdo— AZUL     */
+    --m1-ink:#0F7A37; --m2-ink:#C32A2A; --m3-ink:#8A6400; --m4-ink:#1E55C6;  /* legibles como texto */
+    --m1-soft:#E4F6EA;
+    --m2-soft:#FCE4E4;
+    --m3-soft:#FBF0CF;
+    --m4-soft:#E3ECFF;
+    /* Paleta decorativa del test (independiente de los cuadrantes) */
+    --d1:#9B5DE5; --d1s:#F0E6FC;
+    --d2:#2E7BFF; --d2s:#E1ECFF;
+    --d3:#0FA47F; --d3s:#E1F5EE;
+    --d4:#FF5E7E; --d4s:#FFE6EC;
+    --accent:#FFC93C;
+    --brand:#7C5CFF;
+    --brand-soft:#ECE7FF;
+
+    --shadow:0 18px 44px -22px rgba(35,25,70,.42);
+    --shadow-sm:0 6px 18px -10px rgba(35,25,70,.4);
+    --radius:22px;
+    --font-display:"Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --font-body:"DM Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono:"DM Mono", ui-monospace, monospace;
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --bg:#111022;
+      --surface:#1B1930;
+      --surface-2:#211F38;
+      --ink:#F3F1FB;
+      --ink-soft:#C3BEDC;
+      --ink-faint:#8C86AE;
+      --line:#2E2B48;
+      --line-strong:#3A3760;
+      --m1-ink:#3FD07E; --m2-ink:#FF8A8A; --m3-ink:#F3C94A; --m4-ink:#7FA8FF;
+      --m1-soft:#10331F;
+      --m2-soft:#3A1A1A;
+      --m3-soft:#352B06;
+      --m4-soft:#12274A;
+      --d1s:#2A1B44; --d2s:#122749; --d3s:#123329; --d4s:#3A1A25;
+      --brand-soft:#241C46;
+      --shadow:0 22px 50px -24px rgba(0,0,0,.7);
+      --shadow-sm:0 8px 20px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#111022;
+    --surface:#1B1930;
+    --surface-2:#211F38;
+    --ink:#F3F1FB;
+    --ink-soft:#C3BEDC;
+    --ink-faint:#8C86AE;
+    --line:#2E2B48;
+    --line-strong:#3A3760;
+    --m1-ink:#3FD07E; --m2-ink:#FF8A8A; --m3-ink:#F3C94A; --m4-ink:#7FA8FF;
+    --m1-soft:#10331F;
+    --m2-soft:#3A1A1A;
+    --m3-soft:#352B06;
+    --m4-soft:#12274A;
+    --d1s:#2A1B44; --d2s:#122749; --d3s:#123329; --d4s:#3A1A25;
+    --brand-soft:#241C46;
+    --shadow:0 22px 50px -24px rgba(0,0,0,.7);
+    --shadow-sm:0 8px 20px -12px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 620px at 85% -8%, color-mix(in srgb,var(--m3) 12%,transparent), transparent 60%),
+      radial-gradient(900px 560px at 5% 4%, color-mix(in srgb,var(--m4) 12%,transparent), transparent 58%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:26px 20px 72px}
+
+  /* ---------- shared ---------- */
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:22px}
+  .brand-badge{
+    width:38px;height:38px;border-radius:12px;flex:none;position:relative;
+    background:conic-gradient(from 135deg,var(--m4) 0 25%,var(--m3) 25% 50%,var(--m2) 50% 75%,var(--m1) 75% 100%);
+    box-shadow:var(--shadow-sm);
+  }
+  .brand-badge::after{content:"";position:absolute;inset:15px;border-radius:5px;background:var(--surface)}
+  .brand-name{font-family:var(--font-display);font-weight:700;letter-spacing:.01em;font-size:1.02rem}
+  .brand-sub{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.14em;margin-top:-2px}
+  .theme-btn{
+    margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);
+    width:40px;height:40px;border-radius:12px;cursor:pointer;font-size:1.05rem;line-height:1;
+    display:grid;place-items:center;transition:transform .15s, background .15s;
+  }
+  .theme-btn:hover{transform:translateY(-1px)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+
+  .eyebrow{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;color:var(--ink-faint)}
+  h1{font-family:var(--font-display);font-weight:800;line-height:1.02;margin:0;
+     font-size:clamp(2.1rem,7vw,3.3rem);letter-spacing:-.02em;text-wrap:balance}
+  h2{font-family:var(--font-display);font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
+  p{margin:0}
+
+  .btn{appearance:none;border:none;cursor:pointer;font-family:var(--font-body);font-weight:600;font-size:1rem;
+    padding:15px 26px;border-radius:14px;transition:transform .16s, box-shadow .16s, opacity .16s;
+    display:inline-flex;align-items:center;gap:9px}
+  .btn-primary{background:var(--ink);color:var(--surface);box-shadow:var(--shadow-sm)}
+  .btn-primary:hover{transform:translateY(-2px)}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn-ghost{background:transparent;color:var(--ink-soft);padding-left:6px;padding-right:6px}
+  .btn-ghost:hover{color:var(--ink)}
+  .btn:focus-visible,.opt:focus-visible,.stmt:focus-visible,.theme-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* ---------- intro ---------- */
+  .intro{padding:38px 34px 34px}
+  .intro .eyebrow{margin-bottom:16px}
+  .intro h1{margin-bottom:14px}
+  .intro .lead{color:var(--ink-soft);font-size:1.12rem;max-width:52ch;margin-bottom:28px}
+
+  .howto{display:grid;gap:12px;margin-bottom:26px}
+  .ht{display:flex;gap:14px;align-items:flex-start;padding:16px 17px;border-radius:16px;border:1px solid var(--line);background:var(--surface-2)}
+  .ht .step-dot{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;
+    font-family:var(--font-display);font-weight:700;color:#fff;font-size:.95rem}
+  .ht b{font-family:var(--font-display);font-weight:700;display:block;font-size:1rem;margin-bottom:1px}
+  .ht span{font-size:.9rem;color:var(--ink-soft)}
+
+  .notes{display:grid;gap:11px;margin-bottom:30px}
+  .note{display:flex;gap:12px;align-items:flex-start;font-size:.9rem;color:var(--ink-soft)}
+  .note .n{font-family:var(--font-mono);font-weight:500;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:8px;min-width:26px;height:26px;display:grid;place-items:center;flex:none;font-size:.82rem}
+  .intro-foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .intro-foot .meta{font-size:.85rem;color:var(--ink-faint)}
+
+  /* ---------- progress ---------- */
+  .prog-wrap{margin-bottom:18px}
+  .prog-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+  .prog-label{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .prog-count{font-family:var(--font-mono);font-size:.74rem;color:var(--c,var(--brand))}
+  .prog-track{height:8px;border-radius:99px;background:var(--line-strong);overflow:hidden}
+  .prog-fill{height:100%;border-radius:99px;background:var(--c,var(--brand));width:0;transition:width .5s cubic-bezier(.22,1,.36,1)}
+
+  /* ---------- step ---------- */
+  .step-head{padding:26px 30px 22px;background:var(--c-soft,var(--brand-soft));border-bottom:1px solid var(--line)}
+  .step-kicker{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .step-num{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--c,var(--brand));font-weight:500}
+  .step-tag{margin-left:auto;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-faint)}
+  .step-head h2{font-size:clamp(1.35rem,4.4vw,1.8rem);color:var(--ink)}
+  .step-head .hint{color:var(--ink-soft);font-size:.94rem;margin-top:6px}
+
+  .stmts{padding:16px 22px 6px;display:grid;gap:9px}
+  .stmt{display:flex;gap:13px;align-items:flex-start;text-align:left;width:100%;
+    border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:15px 16px;cursor:pointer;
+    font-family:var(--font-body);font-size:1rem;color:var(--ink-soft);transition:border-color .14s, background .14s, transform .1s}
+  .stmt:hover{border-color:var(--c,var(--brand));transform:translateX(2px)}
+  .stmt .box{width:24px;height:24px;border-radius:7px;border:2px solid var(--line-strong);flex:none;margin-top:1px;
+    display:grid;place-items:center;transition:background .15s, border-color .15s, transform .15s}
+  .stmt .box svg{width:14px;height:14px;stroke:#fff;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset .22s ease}
+  .stmt.on{background:var(--c-soft,var(--brand-soft));border-color:var(--c,var(--brand));color:var(--ink)}
+  .stmt.on .box{background:var(--c,var(--brand));border-color:var(--c,var(--brand));transform:scale(1.06)}
+  .stmt.on .box svg{stroke-dashoffset:0}
+
+  .tally{padding:12px 30px 4px;color:var(--ink-faint);font-size:.86rem}
+  .tally b{font-family:var(--font-mono);color:var(--c,var(--brand));font-weight:500}
+
+  .step-foot{display:flex;align-items:center;gap:12px;padding:18px 30px 26px}
+  .step-foot .spacer{flex:1}
+  .btn-step{background:var(--c,var(--brand))}
+
+  /* ---------- paragraphs phase ---------- */
+  .para{margin:16px 22px 0;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
+  .para .p-head{padding:14px 18px 0;display:flex;align-items:center;gap:9px}
+  .para .p-tag{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--brand);color:#fff;padding:3px 9px;border-radius:7px;font-weight:500}
+  .para .p-tag.done{background:var(--m1)}
+  .para .p-txt{padding:12px 18px 4px;color:var(--ink-soft);font-size:.98rem;line-height:1.6}
+  .para .p-q{padding:6px 18px 0;font-weight:600;font-size:.92rem;color:var(--ink)}
+  .scale{display:flex;gap:7px;padding:12px 18px 18px;flex-wrap:wrap}
+  .opt{flex:1;min-width:42px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);
+    border-radius:12px;padding:11px 4px 8px;cursor:pointer;text-align:center;font-family:var(--font-body);
+    transition:transform .14s, border-color .14s, background .14s, color .14s}
+  .opt .big{display:block;font-family:var(--font-display);font-weight:700;font-size:1.15rem;color:var(--ink)}
+  .opt .sm{display:block;font-size:.62rem;color:var(--ink-faint);margin-top:2px}
+  .opt:hover{transform:translateY(-2px);border-color:var(--brand)}
+  .opt.sel{background:var(--brand);border-color:var(--brand);color:#fff}
+  .opt.sel .big,.opt.sel .sm{color:#fff}
+
+  /* ---------- demographics ---------- */
+  .demo{padding:20px 26px 6px;display:grid;gap:18px}
+  .field{display:grid;gap:9px}
+  .field label{font-weight:600;font-size:.9rem;color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);border-radius:11px;
+    padding:9px 15px;cursor:pointer;font-family:var(--font-body);font-size:.9rem;
+    transition:transform .14s,border-color .14s,background .14s,color .14s}
+  .chip:hover{transform:translateY(-1px);border-color:var(--brand)}
+  .chip.sel{background:var(--brand);border-color:var(--brand);color:#fff}
+  .chip:focus-visible,.text-in:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .text-in{border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:11px;
+    padding:12px 14px;font-family:var(--font-body);font-size:.95rem;width:100%}
+  .text-in::placeholder{color:var(--ink-faint)}
+  .text-in:focus{outline:none;border-color:var(--brand)}
+
+  /* ---------- results ---------- */
+  .res-head{padding:32px 30px 8px;text-align:center}
+  .res-head .eyebrow{margin-bottom:10px}
+  .res-head h1{font-size:clamp(1.8rem,6vw,2.7rem)}
+  .res-head .dom-name{color:var(--dc-ink,var(--m3-ink))}
+  .res-head .res-lead{color:var(--ink-soft);margin:12px auto 0;max-width:46ch;font-size:1.02rem}
+
+  .brainwrap{padding:22px 30px 6px;display:flex;justify-content:center}
+  .brain{width:min(420px,100%);aspect-ratio:1.16/1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;position:relative}
+  .brain::before{content:"FRONTAL";position:absolute;top:-20px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.24em;color:var(--ink-faint)}
+  .brain::after{content:"BASAL";position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.24em;color:var(--ink-faint)}
+  .qcell{position:relative;border-radius:16px;overflow:hidden;background:var(--surface-2);border:1.5px solid var(--line);
+    padding:13px 14px;display:flex;flex-direction:column;justify-content:space-between;min-height:96px}
+  .qcell.tl{border-top-left-radius:40px}
+  .qcell.tr{border-top-right-radius:40px}
+  .qcell.bl{border-bottom-left-radius:40px}
+  .qcell.br{border-bottom-right-radius:40px}
+  .qcell .fill{position:absolute;left:0;right:0;bottom:0;background:var(--qc);opacity:.9;height:0;transition:height 1.1s cubic-bezier(.22,1,.36,1);z-index:0}
+  .qcell .fill.soft{opacity:.16}
+  .qcell .lbl,.qcell .val{position:relative;z-index:1}
+  .qcell .lbl{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);line-height:1.3}
+  .qcell .qname{font-family:var(--font-display);font-weight:700;font-size:.96rem;color:var(--ink);margin-top:1px}
+  .qcell .val{font-family:var(--font-display);font-weight:800;font-size:1.7rem;align-self:flex-end;color:var(--ink);
+    text-shadow:0 1px 6px color-mix(in srgb,var(--surface) 70%,transparent)}
+  .qcell .val small{font-size:.7rem;color:var(--ink-faint);font-weight:600}
+  .qcell.lead{border-color:var(--qc);box-shadow:0 0 0 3px color-mix(in srgb,var(--qc) 30%,transparent)}
+  .qcell.lead .qname{color:var(--qc-ink)}
+
+  .bars{padding:24px 30px 6px;display:grid;gap:14px}
+  .bar-row{display:grid;grid-template-columns:1fr;gap:6px}
+  .bar-top{display:flex;align-items:baseline;gap:8px}
+  .bar-top .nm{font-weight:600;font-size:.95rem}
+  .bar-top .qd{width:11px;height:11px;border-radius:4px;flex:none}
+  .bar-top .sc{margin-left:auto;font-family:var(--font-mono);font-size:.9rem;color:var(--ink-soft)}
+  .bar-track{height:12px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+  .bar-fill{height:100%;border-radius:99px;width:0;transition:width 1s cubic-bezier(.22,1,.36,1)}
+
+  .profile{margin:22px 30px 0;padding:22px 22px;border-radius:16px;background:var(--dc-soft,var(--m3-soft));border:1px solid var(--line)}
+  .profile .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dc-ink,var(--m3-ink));font-weight:500;margin-bottom:8px}
+  .profile .tag .d{width:10px;height:10px;border-radius:4px;background:var(--dc,var(--m3))}
+  .profile h2{font-size:1.35rem;margin-bottom:8px}
+  .profile p{color:var(--ink-soft);font-size:.96rem;line-height:1.6}
+  .traits{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+  .traits span{background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:.8rem;color:var(--ink-soft)}
+
+  .disclaimer{margin:22px 30px 0;padding:16px 18px;border-radius:14px;background:var(--surface-2);border:1px dashed var(--line-strong);font-size:.82rem;color:var(--ink-faint);line-height:1.55}
+  .res-foot{padding:22px 30px 30px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .res-foot .spacer{flex:1}
+
+  .hidden{display:none !important}
+  .fade{animation:fade .4s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+  @media (max-width:560px){
+    .intro{padding:28px 20px 26px}
+    .step-head,.tally,.step-foot,.bars,.res-head,.brainwrap{padding-left:18px;padding-right:18px}
+    .stmts{padding-left:12px;padding-right:12px}
+    .demo{padding-left:18px;padding-right:18px}
+    .para{margin-left:14px;margin-right:14px}
+    .profile,.disclaimer,.res-foot{margin-left:16px;margin-right:16px}
+    .res-foot{padding-left:16px;padding-right:16px}
+    .opt .sm{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-badge"></div>
+    <div>
+      <div class="brand-name">Mapa Cerebral</div>
+      <div class="brand-sub">Método Benziger</div>
+    </div>
+    <button class="theme-btn" id="themeBtn" aria-label="Cambiar tema">◑</button>
+  </div>
+
+  <!-- ============ INTRO ============ -->
+  <section class="card intro fade" id="intro">
+    <div class="eyebrow">Autoevaluación de dominancia cerebral</div>
+    <h1>¿Cómo piensa<br>tu cerebro?</h1>
+    <p class="lead">Un test a ciegas: primero respondés sin saber qué mide cada frase, y sólo al final se revela tu perfil. Se trata de lo que te gusta hacer y hacés con facilidad, sin esfuerzo.</p>
+
+    <div class="howto" id="howto">
+      <div class="ht"><span class="step-dot" style="background:var(--d1)">1</span><div><b>Marcá frases</b><span>60 frases mezcladas al azar, en bloques de 5. Tildá sólo las que te describan muy bien.</span></div></div>
+      <div class="ht"><span class="step-dot" style="background:var(--d2)">2</span><div><b>Identificate</b><span>Leés 4 descripciones y te puntuás del 0 al 5 según cuánto te representan.</span></div></div>
+      <div class="ht"><span class="step-dot" style="background:var(--d4)">3</span><div><b>Descubrí tu mapa</b><span>Se revela tu dominancia cerebral con el puntaje de cada cuadrante.</span></div></div>
+    </div>
+
+    <div class="notes">
+      <div class="note"><span class="n">1</span><p>La dominancia es normal y natural. La mayoría se destaca sólo en uno o dos modos, y así debe ser.</p></div>
+      <div class="note"><span class="n">2</span><p>Hay una diferencia importante entre <b>preferencia</b> y <b>competencia</b>. No marques lo que <i>podés</i> hacer, sino lo que te gusta y hacés con comodidad.</p></div>
+    </div>
+
+    <div class="intro-foot">
+      <button class="btn btn-primary" id="startBtn">Empezar el test →</button>
+      <span class="meta">Anónimo · 5–7 minutos</span>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="hidden" id="quiz">
+    <div class="prog-wrap">
+      <div class="prog-top"><span class="prog-label" id="progLabel">Frases</span><span class="prog-count" id="progCount"></span></div>
+      <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    </div>
+    <div class="card fade" id="step"></div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="card hidden" id="results"></section>
+</div>
+
+<script>
+const MODES = [
+  {
+    id:1, mode:"MODO I", quad:"Basal Izquierdo", arche:"El Organizador",
+    color:"var(--m1)", ink:"var(--m1-ink)", soft:"var(--m1-soft)",
+    cell:"bl", pos:"Basal · Izquierdo",
+    desc:"Este perfil de pensamiento es ordenado y se basa en procedimientos. Se lo distingue por la habilidad de repetir una acción de manera consistente y precisa a lo largo del tiempo. Encuentra satisfacción al seguir rutinas y procedimientos establecidos, y es maestro en prestar atención a los detalles: leal, cumplidor y confiable. Es naturalmente conservador, aprecia los valores tradicionales y prefiere abordar las tareas y resolver los problemas paso a paso.",
+    traits:["Secuencial","Detallista","Confiable","Eficiente","Procedimientos"],
+    result:"Tu mente construye los cimientos. Pensás de forma secuencial, paso a paso, prestás atención al detalle y te sentís cómodo siguiendo rutinas y procedimientos probados. Tu gran valor es la confiabilidad y la eficiencia: sostenés el orden que le permite al resto crecer. Según Benziger, la metafunción de este modo es construir y mantener las bases ordenadas de la vida.",
+    stmts:[
+      "Me destaco en mantener las cosas organizadas.",
+      "Me gusta trabajar en los detalles.",
+      "Soy muy productivo, confiable y autodisciplinado.",
+      "Disfruto de tareas tales como clasificar, archivar, planificar y confeccionar rótulos.",
+      "Creo que las reglas son importantes y deben cumplirse.",
+      "Para trabajar prefiero guiarme por instrucciones y procedimientos específicos.",
+      "Me considero conservador y tradicional.",
+      "Tanto en el trabajo como en casa me gusta tener un lugar específico para cada cosa.",
+      "Utilizo un método paso a paso para resolver los problemas y abordar las tareas.",
+      "Me disgustan enérgicamente la ambigüedad y la falta de previsión.",
+      "Completo mis tareas de manera puntual y ordenada.",
+      "Prefiero relacionarme con personas que controlen sus emociones y se comporten adecuadamente (y las apruebo).",
+      "Siempre leo las instrucciones completamente antes de comenzar un proyecto.",
+      "Disfruto de tener rutinas regulares y seguirlas.",
+      "Prefiero programar mi vida personal y profesional y me molesta cuando tengo que desviarme de ese programa."
+    ]
+  },
+  {
+    id:2, mode:"MODO II", quad:"Basal Derecho", arche:"El Conector",
+    color:"var(--m2)", ink:"var(--m2-ink)", soft:"var(--m2-soft)",
+    cell:"br", pos:"Basal · Derecho",
+    desc:"Este perfil de pensamiento es espiritual y simbólico, y se basa en los sentimientos. Percibe las sutilezas: el estado de ánimo, las emociones y las señales no verbales de los demás. Suele ser muy expresivo y, de manera instintiva, transmite alivio y aliento, conectándose con los demás por medio de palabras y gestos. Es compasivo por naturaleza y lleva la armonía interpersonal tanto a su vida personal como a la profesional; también se destaca por motivar a los demás a “unirse”, compartiendo su emoción y entusiasmo.",
+    traits:["Empático","No verbal","Sensible","Armonía","Vínculos"],
+    result:"Tu mente conecta a las personas. Leés el tono emocional, los rostros y el lenguaje no verbal con una facilidad que a otros les parece magia, y usás la palabra y el gesto para crear vínculo. Sos sensible, interpersonal y generoso: contenés, motivás y tendés puentes. Según Benziger, la metafunción de este modo es generar paz y armonía —“unidos triunfaremos”.",
+    stmts:[
+      "Presto especial atención al lenguaje corporal y a la comunicación no verbal, y tengo la capacidad de comprenderlo.",
+      "Creo que los sentimientos son más verdaderos y más importantes que los pensamientos.",
+      "Disfruto de “conectarme” verbalmente con los demás, de escuchar sus problemas y compartir sus sentimientos.",
+      "Me considero una persona sumamente espiritual.",
+      "Me relaciono con los demás con empatía y me resulta fácil sentir lo que ellos sienten.",
+      "Me destaco en generar entusiasmo y en motivar positivamente a los demás.",
+      "Con frecuencia toco a las personas espontáneamente de manera alentadora.",
+      "Automáticamente observo el rostro de la persona con la que hablo.",
+      "Me encanta cantar, bailar y escuchar música.",
+      "Creo que el desarrollo y el crecimiento personal son sumamente importantes.",
+      "Defino el éxito según la calidad de la experiencia.",
+      "Considero que mis relaciones son la parte más importante de mi vida.",
+      "Me siento incómodo ante situaciones de conflicto.",
+      "Considero que la cooperación y la armonía son los valores humanos más importantes.",
+      "Siempre deseo saber cómo se siente la gente y cómo se relaciona."
+    ]
+  },
+  {
+    id:3, mode:"MODO III", quad:"Frontal Derecho", arche:"El Visionario",
+    color:"var(--m3)", ink:"var(--m3-ink)", soft:"var(--m3-soft)",
+    cell:"tr", pos:"Frontal · Derecho",
+    desc:"Este perfil de pensamiento es visual, espacial y no verbal. Es metafórico y conceptual, y se expresa como fotos o “películas” internas, lo que lo convierte en maestro de la integración, la innovación y la imaginación. Se aburre fácilmente y busca constantemente la estimulación de nuevos conceptos, aventuras e información. Se lo identifica por su “sistema de archivo” visual —material apilado por toda la casa u oficina— y por su sentido del humor particular. Como “altruista conceptual”, se interesa por la humanidad y su evolución.",
+    traits:["Visual","Espacial","Innovador","Conceptual","Adaptable"],
+    result:"Tu mente piensa en imágenes. Captás el cuadro general, los patrones y las posibilidades; sintetizás ideas dispares y te entusiasma inventar, cambiar y explorar lo nuevo. Espacial, intuitivo y con un humor muy propio. Según Benziger, la metafunción de este modo es el crecimiento y la adaptación: imaginar una forma distinta de hacer las cosas.",
+    stmts:[
+      "Me concentro más en el “cuadro general” que en los detalles “quisquillosos”, como la ortografía o llevar el saldo de mi cuenta corriente.",
+      "Habitualmente se me ocurren ideas innovadoras y soluciones creativas.",
+      "Se me reconoce como una persona muy expresiva y con mucha energía.",
+      "Claramente me disgustan las tareas o actividades rutinarias y me aburro enseguida de ellas.",
+      "Me destaco en sintetizar ideas o temas distintos en “un todo” nuevo.",
+      "Prefiero trabajar en forma simultánea, procesando muchas ideas y tareas al mismo tiempo.",
+      "Considero que la novedad, la originalidad y la evolución son los valores más importantes.",
+      "Encuentro fácilmente la información en las pilas que armo para organizar mi casa/oficina.",
+      "Utilizo metáforas y analogías visuales para explicar mi pensamiento a los demás.",
+      "Me entusiasmo con las ideas novedosas o “extrañas” de los demás.",
+      "A la hora de resolver problemas, confío en los presentimientos y en mi intuición.",
+      "Tengo un sentido del humor que me ha llevado a tener problemas por no comportarme adecuadamente.",
+      "Algunas de mis mejores ideas surgen mientras “no estoy haciendo nada en particular”.",
+      "He desarrollado muy bien mis habilidades espaciales: puedo “ver” cómo reorganizar una habitación, rehacer una valija u ordenar el baúl del auto para que todo quepa bien.",
+      "Tengo talento artístico."
+    ]
+  },
+  {
+    id:4, mode:"MODO IV", quad:"Frontal Izquierdo", arche:"El Estratega",
+    color:"var(--m4)", ink:"var(--m4-ink)", soft:"var(--m4-soft)",
+    cell:"tl", pos:"Frontal · Izquierdo",
+    desc:"Este perfil de pensamiento es lógico y matemático, y se destaca en el análisis crítico, la resolución de problemas de diagnóstico y en el uso de máquinas y herramientas. Tiene metas bien definidas y la capacidad de calcular las estrategias más eficientes y costo-efectivas para cualquier situación. Esto lo lleva a posiciones de liderazgo, donde puede controlar las decisiones clave y alinear las circunstancias con los resultados deseados. Dada su habilidad de ser crítico y preciso, prefiere trabajos técnicos, mecánicos o financieros.",
+    traits:["Analítico","Lógico","Decisiones","Objetivos","Diagnóstico"],
+    result:"Tu mente analiza y decide. Descomponés los problemas en sus partes, comparás con lógica fría y elegís el camino más eficiente hacia el objetivo. Orientado a metas, al diagnóstico y a la toma de decisiones. Según Benziger, la metafunción de este modo es el gerenciamiento: dirigir el sistema para que cada parte aporte al resultado.",
+    stmts:[
+      "Prefiero trabajar en temas técnicos o financieros.",
+      "Me gusta el pensamiento crítico y analítico.",
+      "Tengo buenas habilidades para resolver problemas técnicos y de diagnóstico.",
+      "Me destaco en el estudio de las ciencias, finanzas, matemáticas y lógica.",
+      "Me doy cuenta de que disfruto y recargo las energías en debates y disputas verbales.",
+      "Me destaco en entender el funcionamiento de las máquinas y disfruto al usar herramientas y construir o reparar cosas.",
+      "Prefiero tener la responsabilidad final a la hora de tomar decisiones y determinar prioridades.",
+      "Considero que pensar es significativamente más importante que sentir.",
+      "Me destaco en realizar inversiones y en administrar y potenciar los recursos clave como el tiempo y el dinero.",
+      "Me considero básicamente un pensador lógico.",
+      "Me destaco en delegar y dar órdenes.",
+      "Suelo organizar el material en puntos clave y en principios operativos.",
+      "Evalúo mi éxito en función de los resultados reales que produzco y por el resultado final.",
+      "Me considero un líder poderoso, decidido y efectivo.",
+      "Valoro la efectividad y la racionalidad por encima de todo lo demás."
+    ]
+  }
+];
+
+const SCALE_LABELS = ["Nada","","","","","Total"];
+const SEC = [
+  {c:"var(--d1)", s:"var(--d1s)"},
+  {c:"var(--d2)", s:"var(--d2s)"},
+  {c:"var(--d3)", s:"var(--d3s)"},
+  {c:"var(--d4)", s:"var(--d4s)"}
+];
+const PER_SECTION = 5;
+
+// ---------- state ----------
+let sections = [];              // array of arrays of {mode, text, id}
+let paraOrder = [];             // shuffled indices into MODES
+const checked = new Set();      // statement ids ("mode-localIndex")
+const paraScale = [null,null,null,null];  // by MODE index
+let step = 0;                   // 0..nSec-1 = frases ; nSec = párrafos ; nSec+1 = datos
+let TOTAL_STEPS = 0;
+
+// --- Registro opcional en Google Sheets (Apps Script) ---
+// Pegá acá la URL del Web App ("…/exec"). Vacío = sin registro (modo preview).
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbwgQ66pVG2pOiqf_oTvYV77gz2KAhRYAHTTsKwWoE-kaX3neaYuBIFR6q_kMDz7CuHFmw/exec";
+const demo = {edad:null, sexo:null, educacion:null, ciudad:"", ocupacion:""};
+
+const $ = s=>document.querySelector(s);
+const intro=$("#intro"), quiz=$("#quiz"), results=$("#results"), stepEl=$("#step");
+const progFill=$("#progFill"), progLabel=$("#progLabel"), progCount=$("#progCount");
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function buildDeck(){
+  const all=[];
+  MODES.forEach((m,mi)=>m.stmts.forEach((t,li)=>all.push({mode:mi,text:t,id:mi+"-"+li})));
+  shuffle(all);
+  sections=[];
+  for(let i=0;i<all.length;i+=PER_SECTION) sections.push(all.slice(i,i+PER_SECTION));
+  paraOrder=shuffle([0,1,2,3].slice());
+  TOTAL_STEPS=sections.length+2;      // + párrafos + datos
+}
+
+// ---------- theme ----------
+const root=document.documentElement;
+$("#themeBtn").addEventListener("click",()=>{
+  const isDark = root.getAttribute("data-theme")==="dark" ||
+    (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme:dark)").matches);
+  root.setAttribute("data-theme", isDark?"light":"dark");
+});
+
+// ---------- start ----------
+$("#startBtn").addEventListener("click",()=>{
+  buildDeck();
+  step=0;
+  intro.classList.add("hidden");
+  quiz.classList.remove("hidden");
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+function updateProgress(){
+  const nSec=sections.length;
+  const pct=Math.round((step/TOTAL_STEPS)*100);
+  let c,label,count;
+  if(step<nSec){ c=SEC[step%SEC.length].c; label="Frases"; count="Bloque "+(step+1)+" / "+nSec; }
+  else if(step===nSec){ c="var(--brand)"; label="Identificación"; count="Paso "+(nSec+1); }
+  else { c="var(--brand)"; label="Sobre vos"; count="Último paso"; }
+  progFill.parentElement.parentElement.style.setProperty("--c",c);
+  progFill.style.width=pct+"%";
+  progLabel.textContent=label;
+  progCount.textContent=count;
+}
+
+function render(){
+  updateProgress();
+  stepEl.classList.remove("fade"); void stepEl.offsetWidth; stepEl.classList.add("fade");
+  if(step<sections.length) renderSection();
+  else if(step===sections.length) renderParagraphs();
+  else renderDemographics();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function renderSection(){
+  const sec=sections[step];
+  const col=SEC[step%SEC.length];
+  stepEl.style.setProperty("--c",col.c);
+  stepEl.style.setProperty("--c-soft",col.s);
+  const marked=sec.filter(x=>checked.has(x.id)).length;
+  stepEl.innerHTML=`
+    <div class="step-head">
+      <div class="step-kicker">
+        <span class="step-num">Bloque ${step+1} de ${sections.length}</span>
+        <span class="step-tag">Frases</span>
+      </div>
+      <h2>Marcá las frases que te describan</h2>
+      <p class="hint">Tildá sólo las que sean muy tuyas. Dejá en blanco las que no se aplican o te describen sólo en forma limitada.</p>
+    </div>
+    <div class="stmts">
+      ${sec.map(x=>`
+        <button class="stmt ${checked.has(x.id)?"on":""}" data-id="${x.id}">
+          <span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></span>
+          <span>${x.text}</span>
+        </button>`).join("")}
+    </div>
+    <div class="tally">Marcadas en este bloque: <b id="tallyN">${marked}</b> / ${sec.length}</div>
+    <div class="step-foot">
+      <button class="btn btn-ghost" id="backBtn">${step===0?"":"← Atrás"}</button>
+      <span class="spacer"></span>
+      <button class="btn btn-primary btn-step" id="nextBtn">${step===sections.length-1?"Ir a la identificación →":"Siguiente →"}</button>
+    </div>`;
+
+  stepEl.querySelectorAll(".stmt").forEach(b=>b.addEventListener("click",()=>{
+    const id=b.dataset.id;
+    if(checked.has(id)) checked.delete(id); else checked.add(id);
+    b.classList.toggle("on",checked.has(id));
+    $("#tallyN").textContent=sec.filter(x=>checked.has(x.id)).length;
+  }));
+  const back=$("#backBtn"); if(back) back.addEventListener("click",()=>{ if(step>0){step--;render();} });
+  $("#nextBtn").addEventListener("click",()=>{ step++; render(); });
+}
+
+function renderParagraphs(){
+  stepEl.style.setProperty("--c","var(--brand)");
+  stepEl.style.setProperty("--c-soft","var(--brand-soft)");
+  const letters=["A","B","C","D"];
+  stepEl.innerHTML=`
+    <div class="step-head">
+      <div class="step-kicker">
+        <span class="step-num">Identificación</span>
+        <span class="step-tag">Paso final</span>
+      </div>
+      <h2>¿Cuánto te representa cada descripción?</h2>
+      <p class="hint">Leé cada una despacio y puntuate del 0 (nada) al 5 (completamente), según el grado de comodidad y familiaridad que sientas.</p>
+    </div>
+    ${paraOrder.map((mi,k)=>{
+      const m=MODES[mi]; const done=paraScale[mi]!==null;
+      return `<div class="para">
+        <div class="p-head"><span class="p-tag ${done?"done":""}" id="ptag-${mi}">Descripción ${letters[k]}</span></div>
+        <p class="p-txt">${m.desc}</p>
+        <p class="p-q">¿Cuánto te identificás con esta descripción?</p>
+        <div class="scale" data-mode="${mi}">
+          ${[0,1,2,3,4,5].map(n=>`<button class="opt ${paraScale[mi]===n?"sel":""}" data-n="${n}">
+            <span class="big">${n}</span><span class="sm">${SCALE_LABELS[n]}</span></button>`).join("")}
+        </div>
+      </div>`;
+    }).join("")}
+    <div class="step-foot">
+      <button class="btn btn-ghost" id="backBtn">← Atrás</button>
+      <span class="spacer"></span>
+      <button class="btn btn-primary" id="seeBtn" ${paraScale.some(v=>v===null)?"disabled":""}>Continuar →</button>
+    </div>`;
+
+  stepEl.querySelectorAll(".scale").forEach(sc=>{
+    const mi=+sc.dataset.mode;
+    sc.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>{
+      paraScale[mi]=+b.dataset.n;
+      sc.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel",x===b));
+      $("#ptag-"+mi).classList.add("done");
+      $("#seeBtn").disabled = paraScale.some(v=>v===null);
+    }));
+  });
+  $("#backBtn").addEventListener("click",()=>{ step--; render(); });
+  $("#seeBtn").addEventListener("click",()=>{ if(!paraScale.some(v=>v===null)){ step++; render(); } });
+}
+
+function renderDemographics(){
+  stepEl.style.setProperty("--c","var(--brand)");
+  stepEl.style.setProperty("--c-soft","var(--brand-soft)");
+  const ages=["18-24","25-34","35-44","45-54","55-64","65+"];
+  const sexes=["Femenino","Masculino","Otro","Prefiero no decir"];
+  const edu=["Secundario","Terciario","Universitario","Posgrado","Otro"];
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+  const chips=(k,arr)=>`<div class="chips" data-k="${k}">${arr.map(a=>`<button class="chip ${demo[k]===a?"sel":""}" data-v="${esc(a)}">${a}</button>`).join("")}</div>`;
+  stepEl.innerHTML=`
+    <div class="step-head">
+      <div class="step-kicker"><span class="step-num">Sobre vos</span><span class="step-tag">Último paso</span></div>
+      <h2>Antes de ver tu resultado…</h2>
+      <p class="hint">Contanos un poco de vos. Es anónimo y ayuda a entender los perfiles del grupo.</p>
+    </div>
+    <div class="demo">
+      <div class="field"><label>Edad</label>${chips("edad",ages)}</div>
+      <div class="field"><label>Sexo</label>${chips("sexo",sexes)}</div>
+      <div class="field"><label>Nivel educativo</label>${chips("educacion",edu)}</div>
+      <div class="field"><label for="f-ciudad">Ciudad</label><input id="f-ciudad" class="text-in" type="text" autocomplete="off" placeholder="Tu ciudad" value="${esc(demo.ciudad)}"></div>
+      <div class="field"><label for="f-ocup">Ocupación</label><input id="f-ocup" class="text-in" type="text" autocomplete="off" placeholder="A qué te dedicás" value="${esc(demo.ocupacion)}"></div>
+    </div>
+    <div class="step-foot">
+      <button class="btn btn-ghost" id="backBtn">← Atrás</button>
+      <span class="spacer"></span>
+      <button class="btn btn-primary" id="seeBtn" ${(!demo.edad||!demo.sexo||!demo.educacion)?"disabled":""}>Ver mi mapa cerebral ✦</button>
+    </div>`;
+
+  stepEl.querySelectorAll(".chips").forEach(g=>{
+    const k=g.dataset.k;
+    g.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+      demo[k]=b.dataset.v;
+      g.querySelectorAll(".chip").forEach(x=>x.classList.toggle("sel",x===b));
+      $("#seeBtn").disabled=(!demo.edad||!demo.sexo||!demo.educacion);
+    }));
+  });
+  $("#f-ciudad").addEventListener("input",e=>demo.ciudad=e.target.value);
+  $("#f-ocup").addEventListener("input",e=>demo.ocupacion=e.target.value);
+  $("#backBtn").addEventListener("click",()=>{ step--; render(); });
+  $("#seeBtn").addEventListener("click",()=>{ if(demo.edad&&demo.sexo&&demo.educacion) submitAndShow(); });
+}
+
+function submitAndShow(){
+  const t=totals();
+  const max=Math.max(...t);
+  const isTie=t.filter(v=>v===max).length>1;
+  const payload={
+    fecha:new Date().toISOString(),
+    edad:demo.edad, sexo:demo.sexo, educacion:demo.educacion,
+    ciudad:demo.ciudad.trim(), ocupacion:demo.ocupacion.trim(),
+    basal_izq:t[0], basal_der:t[1], frontal_der:t[2], frontal_izq:t[3],
+    dominante:isTie?"Combinado":MODES[t.indexOf(max)].arche
+  };
+  if(SHEET_ENDPOINT){
+    try{ fetch(SHEET_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)}); }
+    catch(e){ /* registro best-effort: nunca bloquea el resultado */ }
+  }
+  showResults();
+}
+
+function totals(){
+  return MODES.map((m,mi)=>{
+    let ticks=0; checked.forEach(id=>{ if(id.slice(0,id.indexOf("-"))===String(mi)) ticks++; });
+    return paraScale[mi]+ticks;
+  });
+}
+
+function showResults(){
+  const t=totals();
+  const max=Math.max(...t);
+  const leaders=t.map((v,i)=>v===max?i:-1).filter(i=>i>=0);
+  const dom=MODES[leaders[0]];
+  const tie=leaders.length>1;
+
+  const cellMap={}; MODES.forEach((m,i)=>cellMap[m.cell]=i);
+  const cellHTML=["tl","tr","bl","br"].map(pos=>{
+    const i=cellMap[pos]; const m=MODES[i]; const v=t[i]; const pct=Math.round(v/20*100);
+    const isLead=leaders.includes(i);
+    return `<div class="qcell ${pos} ${isLead?"lead":""}" style="--qc:${m.color};--qc-ink:${m.ink}">
+      <div class="fill soft" style="height:100%"></div>
+      <div class="fill" data-h="${pct}"></div>
+      <div><div class="lbl">${m.pos}</div><div class="qname">${m.arche}</div></div>
+      <div class="val">${v}<small>/20</small></div>
+    </div>`;
+  }).join("");
+
+  const order=t.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]);
+  const barsHTML=order.map(([v,i])=>{
+    const m=MODES[i]; const pct=Math.round(v/20*100);
+    return `<div class="bar-row">
+      <div class="bar-top"><span class="qd" style="background:${m.color}"></span>
+        <span class="nm">${m.arche}</span><span class="sc">${v} / 20</span></div>
+      <div class="bar-track"><div class="bar-fill" style="background:${m.color}" data-w="${pct}"></div></div>
+    </div>`;
+  }).join("");
+
+  const domLine=tie?`Tenés un perfil <span class="dom-name">combinado</span>`:`Tu modo dominante es <span class="dom-name">${dom.arche}</span>`;
+  const profileHTML=leaders.map(i=>{
+    const m=MODES[i];
+    return `<div class="profile" style="--dc:${m.color};--dc-ink:${m.ink};--dc-soft:${m.soft}">
+      <span class="tag"><span class="d"></span>${m.mode} · ${m.quad}</span>
+      <h2>${m.arche}</h2>
+      <p>${m.result}</p>
+      <div class="traits">${m.traits.map(x=>`<span>${x}</span>`).join("")}</div>
+    </div>`;
+  }).join("");
+
+  results.style.setProperty("--dc",dom.color);
+  results.style.setProperty("--dc-ink",dom.ink);
+  results.style.setProperty("--dc-soft",dom.soft);
+  results.innerHTML=`
+    <div class="res-head">
+      <div class="eyebrow">Tu mapa cerebral</div>
+      <h1>${domLine}</h1>
+      <p class="res-lead">${tie?"Dos modos comparten tu puntaje más alto: así se ve tu cerebro según tus respuestas.":"Así se reparte tu forma de pensar entre los cuatro cuadrantes."}</p>
+    </div>
+    <div class="brainwrap"><div class="brain">${cellHTML}</div></div>
+    <div class="bars">${barsHTML}</div>
+    ${profileHTML}
+    <div class="disclaimer">Esta autoevaluación ayuda a identificar tus modos más fuertes y más débiles, pero por la tendencia a “desviar el tipo” (desarrollar competencias en un modo no preferido) los resultados no siempre son precisos. Para un análisis completo existe el Cuestionario de estilos de pensamiento Benziger (BTSA).</div>
+    <div class="res-foot">
+      <button class="btn btn-ghost" id="restartBtn">↺ Rehacer el test</button>
+      <span class="spacer"></span>
+      <button class="btn btn-primary" id="topBtn" style="background:${dom.ink}">Ver de nuevo mi cerebro ↑</button>
+    </div>`;
+
+  quiz.classList.add("hidden");
+  results.classList.remove("hidden");
+  results.classList.add("fade");
+  window.scrollTo({top:0,behavior:"smooth"});
+
+  requestAnimationFrame(()=>setTimeout(()=>{
+    results.querySelectorAll(".qcell .fill:not(.soft)").forEach(f=>f.style.height=f.dataset.h+"%");
+    results.querySelectorAll(".bar-fill").forEach(f=>f.style.width=f.dataset.w+"%");
+  },80));
+
+  $("#restartBtn").addEventListener("click",()=>{
+    checked.clear(); paraScale.fill(null); step=0;
+    demo.edad=demo.sexo=demo.educacion=null; demo.ciudad=demo.ocupacion="";
+    results.classList.add("hidden"); intro.classList.remove("hidden"); intro.classList.add("fade");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+  $("#topBtn").addEventListener("click",()=>{ document.querySelector(".brain").scrollIntoView({behavior:"smooth",block:"center"}); });
+}
+</script>
+</body>
+</html>
